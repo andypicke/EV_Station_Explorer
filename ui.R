@@ -15,15 +15,27 @@ fluidPage(
   # Application title
   titlePanel("EV Charging Station Explorer"),
   
-  # Sidebar with a slider input for number of bins
+  # 
   sidebarLayout(
+    shiny::sidebarPanel(
+      shiny::selectInput(inputId =  "states_var",
+                         label = "Variable To Plot",
+                         choices = c("Total Stations", "Public Stations", "Private Stations")
+      )
+    ) #sidebarPanel
+    ,
     
-  ),
-  
-  # Show a plot of the generated distribution
-  mainPanel(
-    plotOutput("distPlot")
-  )
-  
+    # Show a plot of the generated distribution
+    mainPanel(
+      shiny::tabsetPanel(
+        tabPanel("About"),
+        shiny::tabPanel("US Map",
+                        shiny::textOutput("result"),
+                        shiny::tabPanel("Map", leaflet::leafletOutput("states_ev_map")),
+        ),
+        tabPanel("Individual State")
+      )
+    ) # mainPanel
+    
+  ) # sidebarLayout
 ) # fluidPage
-
