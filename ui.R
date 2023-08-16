@@ -17,23 +17,27 @@ fluidPage(
   
   # 
   sidebarLayout(
-    shiny::sidebarPanel(
-      shiny::selectInput(inputId =  "states_var",
-                         label = "Variable To Plot",
-                         choices = c("Total Stations", "Public Stations", "Private Stations")
+    sidebarPanel(
+      selectInput(inputId = "states_var",
+                  label = "Variable To Plot",
+                  choices = c("Total Stations" = "n_total",
+                              "Public Stations" = "n_public",
+                              "Private Stations" = "n_private")
       )
     ) #sidebarPanel
     ,
     
-    # Show a plot of the generated distribution
+    # 
     mainPanel(
-      shiny::tabsetPanel(
+      tabsetPanel(
         tabPanel("About"),
-        shiny::tabPanel("US Map",
-                        shiny::textOutput("result"),
-                        shiny::tabPanel("Map", leaflet::leafletOutput("states_ev_map")),
+        tabPanel("US Map",
+                 textOutput("result"),
+                 textOutput('test'),
+                 tabPanel("Map", leaflet::leafletOutput("states_ev_map")),
         ),
-        tabPanel("Individual State")
+        tabPanel("Individual State",
+                 h3("This tab will contain map of data by county for a specific state"))
       )
     ) # mainPanel
     
