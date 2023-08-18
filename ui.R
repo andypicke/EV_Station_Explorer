@@ -9,6 +9,13 @@
 
 library(shiny)
 
+
+# About text
+about_text <- "This Shiny app visualizes data on electric vehicle charging 
+stations from the AFDC database. <br> It creates a choropleth map of the 
+US for a variable selected by the user." 
+
+
 # Define UI for application that draws a histogram
 fluidPage(
   
@@ -27,10 +34,11 @@ fluidPage(
     ) #sidebarPanel
     ,
     
+    
     # 
     mainPanel(
       tabsetPanel(
-        tabPanel("About"),
+        tabPanel("About",h5(about_text)),
         tabPanel("US Map",
                  textOutput("result"),
                  textOutput('test'),
