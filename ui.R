@@ -8,6 +8,8 @@
 #
 
 library(shiny)
+library(leaflet)
+source('load_data.R')
 
 
 # About text
@@ -30,6 +32,11 @@ fluidPage(
                   choices = c("Total Stations" = "n_total",
                               "Public Stations" = "n_public",
                               "Private Stations" = "n_private")
+      ),
+      selectInput(inputId = "wh_state",
+                  label = "State To Plot",
+                  choices = unique(state_county_counts_df$state),
+                  selected = "CO"
       )
     ) #sidebarPanel
     ,
@@ -45,7 +52,8 @@ fluidPage(
                  tabPanel("Map", leaflet::leafletOutput("states_ev_map")),
         ),
         tabPanel("Individual State",
-                 h3("This tab will contain map of data by county for a specific state"))
+                 h3("# Stations/county for a specific state"),
+                 leafletOutput("single_state_ev_map"))
       )
     ) # mainPanel
     
