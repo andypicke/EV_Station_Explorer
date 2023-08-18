@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+library(leaflet)
 source('load_data.R')
 
 
@@ -34,7 +35,8 @@ fluidPage(
       ),
       selectInput(inputId = "wh_state",
                   label = "State To Plot",
-                  choices = unique(state_county_counts_df$state)
+                  choices = unique(state_county_counts_df$state),
+                  selected = "CO"
       )
     ) #sidebarPanel
     ,
