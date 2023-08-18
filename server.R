@@ -10,6 +10,8 @@
 library(shiny)
 library(dplyr)
 library(leaflet)
+library(tigris)
+options(tigris_use_cache = TRUE)
 library(sf)
 source('load_data.R')
 
@@ -24,6 +26,13 @@ state_counts_df_long <- state_counts_df %>%
 # join the state count data to the sf states geometry
 dat_to_map_all <- states_map %>% 
   left_join(state_counts_df_long, by = c("stusps" = "state"))
+
+
+
+state_county_counts_df_long <- state_county_counts_df %>% 
+  tidyr::pivot_longer(cols = starts_with('n_'),
+                      names_to = 'total_type',
+                      values_to = 'n')
 
 
 #------------------------------------------------------------
@@ -52,7 +61,7 @@ function(input, output, session) {
   # choropleth of total # stations per state (type chosen by user)
   output$states_ev_map <- leaflet::renderLeaflet({
     leaflet() %>%
-      #  addTiles() %>% # adds OpenStretMap basemap
+      addTiles() %>% # adds OpenStretMap basemap
       addPolygons(data = dat_to_map(),
                   weight = 1,
                   color = "black",
@@ -66,6 +75,61 @@ function(input, output, session) {
                 opacity = 1,
                 title = "# EV Stations <br> Per State")
   }) #  states_ev_map
+
+  
+  
+  #-----------------------------------------------------------
+  # choropleth of stations/county for specific state
+  
+  
+  # download the state & county shapefile for selected state
+  counties_sf <- reactive({
+    tigris::counties(input$wh_state,cb = TRUE)
+  })
+  
+  # filter data for choropleth based on selectInput
+  dat_single_state <- reactive({
+    state_county_counts_df_long %>%
+      filter(state == input$wh_state) %>% 
+      filter(total_type == input$states_var) 
+  })
+
+  dat_to_map_single_state <- reactive({
+    counties_sf() %>% 
+      left_join(dat_single_state(), by = c("NAMELSAD" = "county"))
+  })
+    
+  # create color palette for choropleth based on chosen data to plot
+  pal_ev_single_state <- reactive({
+    leaflet::colorNumeric(palette = "viridis",
+                          domain = dat_to_map_single_state()$n)
+  })
+
+
+  # choropleth
+  output$single_state_ev_map <- leaflet::renderLeaflet({
+    leaflet() %>%
+      addTiles() %>% # adds OpenStretMap basemap
+      addPolygons(data = dat_to_map_single_state(),
+                  weight = 1,
+                  color = "black",
+                  popup = paste(dat_to_map_single_state()$NAME, "<br>",
+                                " EV Stations: ", dat_to_map_single_state()$n, "<br>"),
+                  fillColor = ~pal_ev_single_state()(n),
+                  fillOpacity = 0.6) %>%
+      addLegend(data = dat_to_map_single_state(),
+                pal = pal_ev_single_state(),
+                values = ~n,
+                opacity = 1,
+                title = "# EV Stations <br> Per County")
+  }) #
+  
+  
+    
+  
+  
+  
+  
   
   
 } #---------- server function

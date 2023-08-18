@@ -30,7 +30,9 @@ ev <- readRDS(paste0('./data/',fname))
 # states_map <- readRDS(file.path(".","data","states_map"))
 
 
+#----------------------------------
 # Count # stations by state
+#----------------------------------
 
 # all stations
 state_counts_total <- 
@@ -58,4 +60,41 @@ state_counts_df <- state_counts_total %>%
   left_join(state_counts_private)
 
 saveRDS(state_counts_df, file.path(".","data","state_counts_df") )
+
+
+
+#----------------------------------
+# Count # stations by county for each state
+#----------------------------------
+
+# need to join zip in ev data to county in shapefile data
+zips <- readr::read_csv(file.path(".","data","zip_code_database.csv"),
+                        show_col_types = FALSE) %>% 
+  select(zip, primary_city, county)
+
+# join zips to ev df to add county names
+ev <- ev %>% 
+  left_join(zips, by = "zip") 
+
+
+state_county_counts_total <- ev %>% 
+  group_by(state, county) %>% 
+  summarise(n_total = n())
+
+state_county_counts_public <- ev %>% 
+  filter(access_code == 'public') %>% 
+  group_by(state, county) %>% 
+  summarise(n_public = n())
+
+state_county_counts_private <- ev %>% 
+  filter(access_code == 'private') %>% 
+  group_by(state, county) %>% 
+  summarise(n_private = n())
+
+# join counts into single df
+state_county_counts_df <- state_county_counts_total %>% 
+  left_join(state_county_counts_public) %>% 
+  left_join(state_county_counts_private)
+
+saveRDS(state_county_counts_df, file.path(".","data","state_county_counts_df") )
 
