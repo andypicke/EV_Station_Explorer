@@ -11,8 +11,7 @@ library(shiny)
 library(dplyr)
 library(leaflet)
 library(sf)
-#source('./load_process_data.R')
-source('./load_data.R')
+source('load_data.R')
 
 
 # pivoting to longer format allows easier plotting based on selectInput
