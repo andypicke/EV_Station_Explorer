@@ -16,7 +16,8 @@ library(dplyr)
 
 
 # Load data for all EV stations previously downloaded from AFDC API
-data_date <- "2023-08-08"
+# data is downloaded in script 'get_ev_stations_data_US.R' in ev_stations project
+data_date <- "2024-03-27"
 fname <- paste0(data_date,'_Elec_Stations_US_All_df')
 ev <- readRDS(paste0('./data/',fname))
 
