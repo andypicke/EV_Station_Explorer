@@ -1,23 +1,25 @@
+#-------------------------------------------------------------
 #
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
+# This is the server logic of a Shiny web application. 
+# https://andypicke.shinyapps.io/EV_Station_Explorer/
 #
-# Find out more about building applications with Shiny here:
 #
-#    http://shiny.rstudio.com/
+# Andy Pickering
+# andypicke@gmail.com
 #
+#-------------------------------------------------------------
+
 
 library(shiny)
 library(dplyr)
 library(leaflet)
-library(tigris)
+library(tigris) # get shapefiles for US states and counties
 options(tigris_use_cache = TRUE)
 library(sf)
 source('load_data.R')
 
 
 # pivoting to longer format allows easier plotting based on selectInput
-
 state_counts_df_long <- state_counts_df %>% 
   tidyr::pivot_longer(cols = starts_with('n_'),
                       names_to = 'total_type',
@@ -27,8 +29,7 @@ state_counts_df_long <- state_counts_df %>%
 dat_to_map_all <- states_map %>% 
   left_join(state_counts_df_long, by = c("stusps" = "state"))
 
-
-
+# count stations by state
 state_county_counts_df_long <- state_county_counts_df %>% 
   tidyr::pivot_longer(cols = starts_with('n_'),
                       names_to = 'total_type',
@@ -58,7 +59,7 @@ function(input, output, session) {
   })
   
   
-  # choropleth of total # stations per state (type chosen by user)
+  # choropleth of total # stations per state (type of station chosen by user)
   output$states_ev_map <- leaflet::renderLeaflet({
     leaflet() %>%
       addTiles() %>% # adds OpenStretMap basemap
@@ -94,6 +95,7 @@ function(input, output, session) {
       filter(total_type == input$states_var) 
   })
 
+  # join ev counts data to county shapefile for 1 state
   dat_to_map_single_state <- reactive({
     counties_sf() %>% 
       left_join(dat_single_state(), by = c("NAMELSAD" = "county"))
@@ -106,7 +108,7 @@ function(input, output, session) {
   })
 
 
-  # choropleth
+  # choropleth for single state (ev station counts by county)
   output$single_state_ev_map <- leaflet::renderLeaflet({
     leaflet() %>%
       addTiles() %>% # adds OpenStretMap basemap

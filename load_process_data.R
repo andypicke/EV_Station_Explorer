@@ -1,11 +1,15 @@
-#
+#-------------------------------------------------------------
 # load_process_data.R
 #
 # This script loads/processes/saves data for use in EV_Station_Explorer Shiny app
 #
+# https://andypicke.shinyapps.io/EV_Station_Explorer/
 #
+# Andy Pickering
+# andypicke@gmail.com
+# 
 #
-#
+#-------------------------------------------------------------
 
 
 library(dplyr)

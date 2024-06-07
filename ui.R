@@ -1,15 +1,19 @@
+#-------------------------------------------------------------
 #
 # This is the user-interface definition of a Shiny web application. You can
 # run the application by clicking 'Run App' above.
 #
-# Find out more about building applications with Shiny here:
+# https://andypicke.shinyapps.io/EV_Station_Explorer/
 #
-#    http://shiny.rstudio.com/
+# Andy Pickering
+# andypicke@gmail.com
 #
+#-------------------------------------------------------------
+
 
 library(shiny)
 library(leaflet)
-source('load_data.R')
+source('load_data.R') # script loads data on EV charging stations that has already been downloaded
 
 
 # About text
@@ -33,7 +37,7 @@ fluidPage(
                               "Public Stations" = "n_public",
                               "Private Stations" = "n_private")
       ),
-      selectInput(inputId = "wh_state",
+      selectInput(inputId = "wh_state", # Choose state to plot in "Indivdual State" tab
                   label = "State To Plot",
                   choices = unique(state_county_counts_df$state),
                   selected = "CO"
@@ -45,7 +49,7 @@ fluidPage(
     # 
     mainPanel(
       tabsetPanel(
-        tabPanel("About",h5(about_text)),
+        tabPanel("About",h5(htmltools::HTML(about_text))),
         tabPanel("US Map",
                  textOutput("result"),
                  textOutput('test'),
